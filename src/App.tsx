@@ -852,7 +852,6 @@ function App() {
     new Notification(showNextEarly ? `Up next: ${target.title}` : `Now: ${target.title}`, {
       body,
       tag: "daybook-live-schedule",
-      renotify: true,
     });
   }, [liveNavigationItems, liveNow]);
 
@@ -1158,7 +1157,7 @@ function App() {
         courseName: course.name,
         courseType: course.type,
         startDate: course.startDate,
-        endDate: course.endDate,
+        endDate: course.endDate ?? course.startDate,
         dailyMinutes: course.dailyMinutes,
         weekendWeight: course.weekendWeight,
         topics: course.topics.map((topic) => topic.name),
@@ -1172,7 +1171,7 @@ function App() {
         { role: "assistant", content: plan.assistantMessage },
       ]);
     } catch (error) {
-      setAIPlannerHistory((current) => current.filter((item, index) => index !== current.length - 1));
+      setAIPlannerHistory((current) => current.filter((_, index) => index !== current.length - 1));
       setAIPlannerError(error instanceof Error ? error.message : "AI course planning failed.");
     } finally {
       setAIPlannerLoading(false);
@@ -1553,10 +1552,15 @@ function App() {
       const planDay = aiPlan ? dateDiff(course.startDate, today) + 1 : 0;
       const planned = aiPlan?.days.find((day) => day.day === planDay);
       if (planned) {
-        const units = planned.subtopicIds.map((id) => aiPlan.subtopics.find((item) => item.id === id)).filter(Boolean) as StoredAIPlan["subtopics"];
-        if (units.length) {
-          for (const unit of units) work.push({ title: unit.title, minutes: unit.minutes, subtitle: course.name });
-          continue;
+        const plan = aiPlan;
+        if (plan) {
+          const units = planned.subtopicIds
+            .map((id) => plan.subtopics.find((item) => item.id === id))
+            .filter(Boolean) as StoredAIPlan["subtopics"];
+          if (units.length) {
+            for (const unit of units) work.push({ title: unit.title, minutes: unit.minutes, subtitle: course.name });
+            continue;
+          }
         }
       }
       const remaining = course.topics.find((topic) => !topic.completed);
