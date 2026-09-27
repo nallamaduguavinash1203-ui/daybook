@@ -1,0 +1,43 @@
+DAYBOOK AI COURSE PLANNER — SETUP
+
+What was added
+- Plan with AI button on each course.
+- Chat-style course requirements input.
+- Structured AI plan preview.
+- AI can split supplied topics into sensible subtopics and distribute them across course days.
+- Daybook remains responsible for actual clock-time scheduling.
+- AI API key stays on the backend, never in React.
+
+1. FRONTEND
+Copy App.tsx, App.css and aiCoursePlanner.ts into the same frontend source folder where your current App.tsx lives.
+
+2. BACKEND
+Copy the `server` folder into your Daybook project root.
+Open a terminal in `server` and run:
+  npm install
+
+Copy `.env.example` to `.env` and set:
+  OPENAI_API_KEY=your_key
+
+Optional:
+  DAYBOOK_AI_MODEL=gpt-5.6-luna
+  PORT=8787
+
+Start the AI server:
+  npm run dev
+
+3. FRONTEND ENVIRONMENT
+If the AI server runs at localhost:8787, no frontend variable is required.
+If hosted elsewhere, set:
+  VITE_DAYBOOK_AI_URL=https://your-ai-server.example.com
+
+4. IMPORTANT
+Do NOT put OPENAI_API_KEY in VITE_* variables or in App.tsx.
+Do NOT commit the `.env` file to GitHub.
+
+Current behavior
+- AI plans course work only.
+- AI does not generate teaching notes.
+- AI does not choose exact clock times.
+- AI does not overwrite fixed classes/lunch/events.
+- AI output is shown for review before its subtopics are added.
